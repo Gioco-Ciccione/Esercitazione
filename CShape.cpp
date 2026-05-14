@@ -106,21 +106,7 @@ Shape& Shape::operator=(const Shape &r)
 /// @return true if the two objects have the same width and the same length  
 bool Shape::operator==(const Shape &r)
 {
-    const float eps = 1e-6f;
-    bool posEqual = (fabs(x - r.x) < eps) && (fabs(y - r.y) < eps);
-    bool dimsEqual = (fabs(width - r.width) < eps) &&
-                     (fabs(height - r.height) < eps);
-
-    bool sameShape = typeid(*this) == typeid(r);
-
-	/* optional
-    const char* t1 = text;
-    const char* t2 = r.text;
-
-    bool textEqual = (strcmp(t1, t2) == 0);
-	*/
-
-    return posEqual && dimsEqual && sameShape;
+    return IsEqual(r);
 }
 
 /* ----------------------------
@@ -146,7 +132,8 @@ void Shape::Init()
 }
 
 /// @brief initialization of the object as a copy of an object 
-/// @param r reference to the object that should be copied 
+/// @param r reference to the object to check the equality
+/// @return if r is equal to this
 void Shape::Init(const Shape &r)
 {
     x = r.x;
@@ -175,6 +162,27 @@ void Shape::Reset()
     height = 0.0;
     x = 0.0;
     y = 0.0;
+}
+
+/// @brief check if r is equal to this
+/// @param r 
+bool Shape::IsEqual(const Shape& r) const
+{
+    const float eps = 1e-6f;
+    bool posEqual = (fabs(x - r.x) < eps) && (fabs(y - r.y) < eps);
+    bool dimsEqual = (fabs(width - r.width) < eps) &&
+        (fabs(height - r.height) < eps);
+
+    bool sameShape = typeid(*this) == typeid(r);
+
+    /* optional
+    const char* t1 = text;
+    const char* t2 = r.text;
+
+    bool textEqual = (strcmp(t1, t2) == 0);
+    */
+
+    return posEqual && dimsEqual && sameShape;
 }
 
 /* ----------------------------
@@ -274,7 +282,7 @@ void Shape::SetText(const char* string)
 /// @brief get position of the object
 /// @param px (reference to) position on x
 /// @param py (reference to) position on y
-void Shape::GetPosition(float &px, float &py)
+void Shape::GetPosition(float &px, float &py) const
 {
     px = x;
     py = y;
@@ -283,7 +291,7 @@ void Shape::GetPosition(float &px, float &py)
 /// @brief get width and length of the object
 /// @param w (reference to) width 
 /// @param h (reference to) height
-void Shape::GetDim(float &w, float &h)
+void Shape::GetDim(float &w, float &h) const
 {
     w = width;
     h = height;
@@ -291,28 +299,28 @@ void Shape::GetDim(float &w, float &h)
 
 /// @brief get position on x of the object
 /// @return position on x
-float Shape::GetX()
+float Shape::GetX() const
 {
     return x;
 }
 
 /// @brief get position on y of the object
 /// @return position on y
-float Shape::GetY()
+float Shape::GetY() const
 {
     return y;
 }
 
 /// @brief get height of the object
 /// @return height
-float Shape::GetHeight()
+float Shape::GetHeight() const
 {
     return height;
 }
 
 /// @brief get width of the object
 /// @return width
-float Shape::GetWidth()
+float Shape::GetWidth() const
 {
     return width;
 }
@@ -320,14 +328,14 @@ float Shape::GetWidth()
 
 /// @brief computes the area of the object
 /// @return area 
-float Shape::GetBoundingBoxArea()
+float Shape::GetBoundingBoxArea() const
 {
     return width * height;
 }
 
 /// @brief returns text in the text area 
 /// @param string pointer to a string 
-void Shape::GetText(char* string)
+void Shape::GetText(char* string) const
 {
     if (!string) return;
     if (!text) {
@@ -343,20 +351,20 @@ void Shape::GetText(char* string)
 
 /// @brief write an error message 
 /// @param string message to be printed
-void Shape::ErrorMessage(const char *string)
+void Shape::ErrorMessage(const char *string) const
 {
     std::cerr << "[Shape - ERROR] " << (string ? string : "(null)") << std::endl;
 }
 
 /// @brief write an warning message 
 /// @param string message to be printed
-void Shape::WarningMessage(const char *string)
+void Shape::WarningMessage(const char *string) const
 {
     std::cerr << "[Shape - WARNING] " << (string ? string : "(null)") << std::endl;
 }
 
 /// @brief for debugging: all infos about the object
-void Shape::Dump()
+void Shape::Dump() const
 {
     std::cout << "Shape Dump:" << std::endl;
     std::cout << "  Position: (" << x << ", " << y << ")" << std::endl;

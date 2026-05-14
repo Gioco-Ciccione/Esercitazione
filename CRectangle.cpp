@@ -56,13 +56,6 @@ Rectangle& Rectangle::operator=(const Rectangle &r)
     return *this;
 }
 
-/// @brief overload of operator == 
-/// @param r reference to the object on the right side of the operator 
-/// @return true if the two bounding boxes have the same width and the same length  
-bool Rectangle::operator==(const Rectangle &r)
-{
-    return Shape::operator==(r);
-}
 
 /* ----------------------------
    BASIC HANDLING
@@ -94,7 +87,7 @@ void Rectangle::Reset()
    
 /// @brief to get the height of the rectangle
 /// @return height
-float Rectangle::GetVSide()
+float Rectangle::GetVSide() const
 {
 	return height;
     
@@ -102,21 +95,21 @@ float Rectangle::GetVSide()
 
 /// @brief to get the width of the rectangle
 /// @return width
-float Rectangle::GetHSide()
+float Rectangle::GetHSide() const
 {
     return width;
 }
 
 /// @brief computes the area of the rectangle
 /// @return area 
-float Rectangle::GetArea()
+float Rectangle::GetArea() const
 {
     return width * height;
 }
 
 /// @brief computes the perimeter of the rectangle
 /// @return perimeter 
-float Rectangle::GetPerimeter()
+float Rectangle::GetPerimeter() const
 {
     return 2.0 * (width + height);
 }
@@ -126,7 +119,7 @@ float Rectangle::GetPerimeter()
    ---------------------------- */
 
 /// @brief for debugging: all infos about the object
-void Rectangle::Dump()
+void Rectangle::Dump() const
 {
 	cout << endl <<  "----------------------" << endl;
     cout << "Rectangle Dump:" << endl << endl;

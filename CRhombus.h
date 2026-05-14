@@ -20,13 +20,12 @@ public:
     Rhombus(float px, float py, float w, float h);
     Rhombus(const Rhombus &r);
 
-    ~Rhombus();
+    ~Rhombus() override;
     /// @}
 
     /// @name OPERATORS
     /// @{
     Rhombus& operator=(const Rhombus &r);
-    bool operator==(const Rhombus &r);
     /// @}
 
     /// @name BASIC HANDLING
@@ -38,16 +37,16 @@ public:
 
     /// @name GETTERS
     /// @{
-    float GetArea();
-    float GetPerimeter();
-    float GetHDiagonal();
-    float GetVDiagonal();
-	float GetSide();
+    float GetArea() const override;
+    float GetPerimeter() const override;
+    float GetHDiagonal() const;
+    float GetVDiagonal() const;
+	float GetSide() const;
     /// @}
 
     /// @name DEBUG and SERIALIZATION
     /// @{
-    void Dump();
+    void Dump() const override;
     /// @}
 };
 

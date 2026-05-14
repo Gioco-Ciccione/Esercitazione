@@ -57,13 +57,6 @@ Rhombus& Rhombus::operator=(const Rhombus &r)
     return *this;
 }
 
-/// @brief overload of operator == 
-/// @param r reference to the object on the right side of the operator 
-/// @return true if the two bounding boxes have the same width and the same length  
-bool Rhombus::operator==(const Rhombus &r)
-{
-    return Shape::operator==(r);
-}
 
 /* ----------------------------
    BASIC HANDLING
@@ -94,28 +87,28 @@ void Rhombus::Reset()
 
 /// @brief to get the horizontal diagonal of the rhombus
 /// @return horizontal diagonal
-float Rhombus::GetHDiagonal()
+float Rhombus::GetHDiagonal() const
 {
     return width;
 }
 
 /// @brief to get the vertical diagonal of the rhombus
 /// @return vertical diagonal
-float Rhombus::GetVDiagonal()
+float Rhombus::GetVDiagonal() const
 {
     return height;
 }
 
 /// @brief computes the area of the rhombus
 /// @return area
-float Rhombus::GetArea()
+float Rhombus::GetArea() const
 {
     return (GetHDiagonal() * GetVDiagonal()) / 2.0;
 }
 
 /// @brief computes the perimeter of the rhombus
 /// @return perimeter
-float Rhombus::GetPerimeter()
+float Rhombus::GetPerimeter() const
 {
     float side;
 
@@ -126,7 +119,7 @@ float Rhombus::GetPerimeter()
 
 /// @brief computes the side of the rhombus
 /// @return side
-float Rhombus::GetSide()
+float Rhombus::GetSide() const
 {
     float d1, d2, side;
 
@@ -144,7 +137,7 @@ float Rhombus::GetSide()
    ---------------------------- */
 
 /// @brief for debugging: all infos about the object
-void Rhombus::Dump()
+void Rhombus::Dump() const
 {
     cout << "Rhombus Dump:" << endl;
 

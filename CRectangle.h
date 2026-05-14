@@ -20,13 +20,12 @@ public:
     Rectangle(float px, float py, float w, float h);
     Rectangle(const Rectangle &r);
 
-    ~Rectangle();
+    ~Rectangle() override;
     /// @}
 
     /// @name OPERATORS
     /// @{
     Rectangle& operator=(const Rectangle &r);
-    bool operator==(const Rectangle &r);
     /// @}
 
     /// @name BASIC HANDLING
@@ -38,15 +37,15 @@ public:
 	
 	/// @name GETTERS
     /// @{
-	float GetVSide();
-	float GetHSide();
-    float GetArea();
-    float GetPerimeter();
+	float GetVSide() const;
+	float GetHSide() const;
+    float GetArea() const override;
+    float GetPerimeter() const override;
     /// @}
 
     /// @name DEBUG and SERIALIZATION
     /// @{
-    virtual void Dump();
+    virtual void Dump() const override;
     /// @}
 };
 

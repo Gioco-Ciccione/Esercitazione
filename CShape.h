@@ -50,6 +50,8 @@ public:
     void Init();
     void Init(const Shape &r);
     void Reset();
+
+    virtual bool IsEqual(const Shape& r) const;
     /// @}
 	
 	/// @name FOMATTING
@@ -67,29 +69,29 @@ public:
 
     void SetText(const char* string);
 
-    void GetPosition(float &px, float &py);
-    void GetDim(float &w, float &h);
+    void GetPosition(float &px, float &py) const;
+    void GetDim(float &w, float &h) const;
 
-    float GetX();
-    float GetY();
-    float GetHeight();
-    float GetWidth();
+    float GetX() const;
+    float GetY() const;
+    float GetHeight() const;
+    float GetWidth() const;
 
-    float GetBoundingBoxArea();
+    float GetBoundingBoxArea() const;
 
-    void GetText(char* string);
+    void GetText(char* string) const;
 	
-	virtual float GetPerimeter()=0;
-	virtual float GetArea()=0;
+	virtual float GetPerimeter() const = 0;
+	virtual float GetArea() const = 0;
 
     /// @}
 
 
     /// @name DEBUG and SERIALIZATION
     /// @{
-    void ErrorMessage(const char *string);
-    void WarningMessage(const char *string);
-    virtual void Dump();
+    void ErrorMessage(const char *string) const;
+    void WarningMessage(const char *string) const;
+    virtual void Dump() const;
     /// @}
 
 };
