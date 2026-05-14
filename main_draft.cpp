@@ -19,7 +19,7 @@ int main()
     figures[1] = make_unique<Rectangle>(0,0,10,30);
     figures[2] = make_unique<IsoscelesTriangle>(12, 67, 67, 67);
 
-    cout << (figures[0] == figures[1]) << endl;
+    cout << (*figures[0] == *figures[1]) << endl;
     
     return 0;
 }
