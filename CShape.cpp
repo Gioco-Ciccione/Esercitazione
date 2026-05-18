@@ -191,7 +191,6 @@ bool Shape::IsEqual(const Shape& r) const
 
 /// @brief to rescale the shape without changing the aspect ratio
 /// @param sf scale factor (1.0 = 100%, no changes)
-   
 void Shape::Scale(float sf) 
 {
     if (sf < 0.0f) {
