@@ -8,15 +8,21 @@
 #include <memory.h>
 #include "ShapeTester.h"
 #include "main_draft.h"
+#include "Grid.h"
+#include <string>
 
 using namespace std;
 
 #define MAX_SHAPES 10
+#define GRID_SIZE 100
 
+static void MainMenu(Grid* grid);
+
+static string GetShapeType(weak_ptr<Shape> shape_ptr);
 
 int main()
 {
-    array<unique_ptr<Shape>, MAX_SHAPES> figures;
+    /*array<unique_ptr<Shape>, MAX_SHAPES> figures;
 
     cout << "===== TEST GERARCHIA SHAPE =====" << endl;
 
@@ -45,9 +51,105 @@ int main()
     ShapeTester::ExecuteTestRoutine(figures);
 
     // Destructors call (automatically called by smart ptrs)
-    cout << endl << "===== DESTRUCTORS =====" << endl << endl;
+    cout << endl << "===== DESTRUCTORS =====" << endl << endl;*/
+
+    Grid grid(GRID_SIZE, GRID_SIZE);
+
+    MainMenu(&grid);
     
     return 0;
+}
+
+static void MainMenu(Grid* grid)
+{
+    int input;
+    cout << endl << "=================================" << endl <<
+                    "               MENU              " << endl <<
+                    "=================================" << endl;
+    cout << "Seleziona un opzione: " << endl <<
+        "1) Visulizza tutti i poligoni" << endl <<
+        "2) Modifica proprietà di un poligono" << endl <<
+        "3) Sposta un poligono sulla griglia" << endl <<
+        "4) Inserisci un nuovo poligono" << endl <<
+        "5) Cancella un poligono" << endl <<
+        "6) Cancella tutti i poligoni" << endl <<
+        "0) Esci" << endl;
+
+    if (cin >> input) {
+        switch (input) {
+            case 0:
+                cout << "Termine programma" << endl;
+                return;
+            case 1:
+                cout << "Elenco Poligoni: " << endl;
+                vector<weak_ptr<Shape>> _shapes = grid->GetShapes();
+                float _pos_x, _pos_y, _width, _height;
+                string _shape_type;
+
+                for (int i = 0; i < _shapes.size(); i++) {
+                    _shape_type = GetShapeType(_shapes[i]);
+                    _shapes[i].lock()->GetPosition(_pos_x, _pos_y);
+                    _shapes[i].lock()->GetDim(_width, _height);
+
+                    cout << "[" << i << "]: " << _shape_type << " Coord:[" << _pos_x << "," << _pos_y << "]" << " Dim:[" << _width << "," << _height << "]" << endl;
+                }
+
+                string _decision;
+                cout << "Desideri mostrare ulteriori informazioni su uno specifico poligono? (S/N)" << endl;
+                if (cin >> _decision) {
+                    if (_decision == "S") {
+                        int _index;
+                        cout << "Selezionare l'indice di interesse: ";
+                        if (cin >> _index) {
+                            if (_index < _shapes.size()) {
+
+                            }
+                            else {
+                                cout << "Indice non valido" << endl;
+                            }
+                        }
+                        else {
+                            cout << "Indice non valido" << endl;
+                        }
+                    }
+                }
+
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+            {
+                int shapes_count = grid->ClearGrid();
+                cout << "Eliminazione poligoni: " << shapes_count << " poligoni eliminati" << endl;
+            }
+            break;
+            default:
+                cout << "Input non valido" << endl;
+        }
+    }
+    else {
+        cout << "Input non valido" << endl;
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    MainMenu(grid);
+}
+
+string GetShapeType(weak_ptr<Shape> shape_ptr)
+{
+    const std::type_info& type = typeid(*shape_ptr.lock());
+    if (type == typeid(Rectangle)) return "Rettangolo";
+    if (type == typeid(Rhombus)) return "Rombo";
+    if (type == typeid(IsoscelesTriangle)) return "Triangolo Isoscele";
+
+    return "Undefined";
 }
 
 
