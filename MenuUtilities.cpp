@@ -1,0 +1,174 @@
+#include "MenuUtilities.h"
+#include <memory>
+#include <string>
+
+#include "CShape.h"
+#include "CRectangle.h"
+#include "CRhombus.h"
+#include "CIsoscelesTriangle.h"
+#include "ShapeTester.h"
+#include "Grid.h"
+#include "MenuNode.h"
+#include "MenuNavigator.h"
+#include "MenuContext.h"
+#include "macros.h"
+
+using namespace std;
+using enum EndActionBehaviour;
+
+// Funzione input float sicuro
+EndActionBehaviour ReadFloatFromTerminal(float& outValue, bool allowOnlyPositive) {
+    cin >> outValue;
+
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Input non valido" << endl;
+        return Repeat;
+    }
+
+    if (allowOnlyPositive && outValue < 0) {
+        cout << "Non sono ammessi valori negativi" << endl;
+        return Repeat;
+    }
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    return ExecuteSelectedChild;
+}
+
+// Funzione input string sicuro
+EndActionBehaviour ReadStringFromTerminal(string& outValue, bool allowEmpty) {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    getline(cin, outValue);
+
+    if (cin.fail()) {
+        cin.clear();
+        cout << "Input non valido" << endl;
+        return Repeat;
+    }
+
+    if (!allowEmpty && outValue.empty()) {
+        cout << "La stringa non puo' essere vuota" << endl;
+        return Repeat;
+    }
+
+    return ExecuteSelectedChild;
+}
+
+// Menu per selezione shape
+shared_ptr<MenuNode> BuildShapeSelectionMenu(Grid& grid, const string& text, function<EndActionBehaviour(MenuContext&, int)> action) {
+    auto root = NODE(text);
+    auto shapes = grid.GetShapes();
+
+    for (int i = 0; i < shapes.size(); ++i) {
+        auto shape = shapes[i].lock();
+        if (!shape) continue;
+
+        float pos_x, pos_y, width, height;
+        shape->GetPosition(pos_x, pos_y);
+        shape->GetDim(width, height);
+
+        string shape_name = GetShapeType(shapes[i]) +
+            ": Location=[" + to_string(pos_x) + "," + to_string(pos_y) + "]" +
+            ", Size=[" + to_string(width) + "," + to_string(height) + "]";
+
+        auto child = NODE(
+            "[ index:" + to_string(i) + " ] " + shape_name,
+            [action, i](MenuContext& ctx, MenuNavigator& nav) {
+                ctx.selectedShapeIndex = i;
+                return action(ctx, i);
+            }
+        )->SetBackOptionVisibility(true)->MarkAsRuntimeGenerated();
+
+        root->AddChild(child)->SetBackOptionVisibility(true);
+    }
+
+    return root;
+}
+
+shared_ptr<MenuNode> BuildShapeSelectionMenuWithChild(Grid& grid, const string& text, function<EndActionBehaviour(MenuContext&, int)> action, vector<shared_ptr<MenuNode>> children) {
+    auto ret = BuildShapeSelectionMenu(grid, text, action);
+    for (auto node : ret->GetChildren()) {
+        for (auto child : children) {
+            node->AddChild(child);
+        }
+    }
+    return ret;
+}
+
+// Funzione helper per tipo shape
+string GetShapeType(weak_ptr<Shape> shape_ptr) {
+    auto s = shape_ptr.lock();
+    if (!s) return "Invalid";
+
+    const type_info& type = typeid(*s);
+    if (type == typeid(Rectangle)) return "Rettangolo";
+    if (type == typeid(Rhombus)) return "Rombo";
+    if (type == typeid(IsoscelesTriangle)) return "Triangolo Isoscele";
+    return "Undefined";
+}
+
+void PrintAndWait(const string& message) {
+    cout << message << endl;
+    cout << "Premi INVIO per continuare...";
+
+    cin.clear();
+
+    string str;
+    getline(cin, str);
+}
+
+EndActionBehaviour HasShapes(MenuContext& ctx, MenuNavigator& nav, function<void()> fn) {
+    if (ctx.grid.GetShapes().empty()) {
+        PrintAndWait("Non sono presenti poligoni nella griglia");
+        return JumpToStart;
+    }
+    fn();
+    return ExecuteSelectedChild;
+}
+
+EndActionBehaviour ShowShapesList(MenuContext& ctx, MenuNavigator& nav, const string& text, vector<shared_ptr<MenuNode>> children, const string& title) {
+    return HasShapes(ctx, nav, [&] {
+        auto modifyMenu = BuildShapeSelectionMenuWithChild(ctx.grid, text, [](MenuContext& context, int i) {
+            return ExecuteSelectedChild;
+            }, children);
+        if (title != "") {
+            for (auto option : modifyMenu->GetChildren()) {
+                option->SetTitle(title);
+            }
+        }
+        nav.Execute(modifyMenu);
+        });
+}
+
+EndActionBehaviour ShowShapesListWithFunction(MenuContext& ctx, MenuNavigator& nav, const string& text, function<EndActionBehaviour(MenuContext&, int)> fn) {
+    return HasShapes(ctx, nav, [&] {
+        auto modifyMenu = BuildShapeSelectionMenuWithChild(ctx.grid, text, fn, {});
+        nav.Execute(modifyMenu);
+        });
+}
+
+bool ModifyAndValidate(Grid& grid, shared_ptr<Shape> shape, function<void(Shape&)> modifyFunc)
+{
+    if (!shape)
+        return false;
+
+    // Backup completo della shape
+    float pos_x, pos_y, width, height;
+    shape->GetPosition(pos_x, pos_y);
+    shape->GetDim(width, height);
+
+    // Applica la modifica tramite lambda
+    modifyFunc(*shape);
+
+    // Controlla validità
+    if (grid.IsShapeInGrid(shape))
+        return true;
+
+    // Rollback
+    shape->SetPosition(pos_x, pos_y);
+    shape->SetDim(width, height);
+
+    return false;
+}

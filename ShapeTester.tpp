@@ -1,5 +1,5 @@
 /// @brief Helper: executes the full test routine on the input figures
-/// @tparam N number of elements in the array (deduced at compile time)
+/// @tparam N number of elements in the array
 /// @param figures array of unique_ptr<Shape>
 template <size_t N>
 void ShapeTester::ExecuteTestRoutine(const array<unique_ptr<Shape>, N>& figures)
@@ -42,7 +42,7 @@ void ShapeTester::ShapesTablePrint(const array<array<bool, N>, N>& table)
 
 
 /// @brief Prints all shapes in the array using polymorphic Dump()
-/// @tparam N number of elements in the array (deduced at compile time)
+/// @tparam N number of elements in the array
 /// @param figures array of unique_ptr<Shape>
 template <size_t N>
 void ShapeTester::DumpAll(const array<unique_ptr<Shape>, N>& figures)
@@ -57,7 +57,7 @@ void ShapeTester::DumpAll(const array<unique_ptr<Shape>, N>& figures)
 }
 
 /// @brief Builds and prints a truth table for polymorphic operator== between shapes
-/// @tparam N number of elements in the array (deduced at compile time)
+/// @tparam N number of elements in the array
 /// @param figures array of unique_ptr<Shape>
 template <size_t N>
 void ShapeTester::TestEquality(const array<unique_ptr<Shape>, N>& figures)
@@ -80,7 +80,7 @@ void ShapeTester::TestEquality(const array<unique_ptr<Shape>, N>& figures)
 }
 
 /// @brief Tests the correctness of Shape::Scale() on all shapes
-/// @tparam N number of elements in the array (deduced at compile time)
+/// @tparam N number of elements in the array
 /// @param figures array of unique_ptr<Shape>
 template <size_t N>
 void ShapeTester::TestScale(const array<unique_ptr<Shape>, N>& figures)

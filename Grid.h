@@ -47,7 +47,7 @@ public:
     /// @{
     bool AddShape(weak_ptr<Shape> shape_ptr);
     bool RemoveShapeAt(int index);
-    bool RemoveShape(weak_ptr<Shape> shape_ptr);
+    bool RemoveShape(const shared_ptr<Shape>& shape_ptr);
 
     bool IsShapeInGrid(weak_ptr<Shape> shape_ptr);
 

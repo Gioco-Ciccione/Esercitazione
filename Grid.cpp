@@ -27,6 +27,12 @@ weak_ptr<Shape> Grid::GetShapeAt(int index) const {
 	return shapes[index];
 }
 
+void Grid::SetSize(pair<int, int> size)
+{
+	this->size.first = size.first;
+	this->size.second = size.second;
+}
+
 
 bool Grid::AddShape(weak_ptr<Shape> shape_ptr) {
 	if (shape_ptr.expired()) return false;
@@ -37,7 +43,7 @@ bool Grid::AddShape(weak_ptr<Shape> shape_ptr) {
 
 bool Grid::RemoveShapeAt(int index) {
 	if (index >= shapes.size()) return false;
-	shapes[index] = nullptr;
+	shapes.erase(shapes.begin() + index);
 	return true;
 }	
 
@@ -62,16 +68,15 @@ int Grid::ClearGrid()
 	return shapes_count;
 }
 
-bool Grid::RemoveShape(weak_ptr<Shape> shape_ptr) {
-	if (shape_ptr.expired()) return false;
+bool Grid::RemoveShape(const std::shared_ptr<Shape>& shape_ptr) {
 
 	auto oldSize = shapes.size();
 
 	shapes.erase(
 		std::remove_if(shapes.begin(), shapes.end(),
-			[&](const std::shared_ptr<Shape>& p)
+			[&](const shared_ptr<Shape>& s)
 			{
-				return p == shape_ptr.lock();
+				return s.get() == shape_ptr.get();
 			}),
 		shapes.end());
 
