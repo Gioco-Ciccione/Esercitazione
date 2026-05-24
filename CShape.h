@@ -6,9 +6,9 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#define TEXTSIZE 1000
+#include <string>
 
-
+using namespace std;
 /// @class Shape
 /// @brief to manage a generic object with a shape
 class Shape
@@ -24,7 +24,7 @@ protected:
     float width;
 
     /// optional text inside the shape
-    char* text;
+    string text; //Cambiato a string per una maggiore compatibilità con il resto del codice e un migliore utilizzo della memoria
 
 public:
 
@@ -41,7 +41,7 @@ public:
     /// @name OPERATORS
     /// @{
     Shape& operator=(const Shape &r);
-    bool operator==(const Shape &r);
+    bool operator==(const Shape &r) const;  //Aggiunto const perchè l'operatore == non dovrebbe modificare lo stato dell'istanza
     /// @}
 
 
@@ -51,7 +51,7 @@ public:
     void Init(const Shape &r);
     void Reset();
 
-    virtual bool IsEqual(const Shape& r) const;
+    virtual bool IsEqual(const Shape& r) const;  //Aggiunto metodo per permettere di sfruttare il polimorfismo con l'operatore == (che non permette polimorfismo completo (solo alto destro dell'espressione))
     /// @}
 	
 	/// @name FOMATTING
@@ -67,7 +67,7 @@ public:
     void SetWidth(float w);
     void SetDim(float w, float h);
 
-    void SetText(const char* string);
+    void SetText(const string& string);
 
     void GetPosition(float &px, float &py) const;
     void GetDim(float &w, float &h) const;
@@ -79,7 +79,7 @@ public:
 
     float GetBoundingBoxArea() const;
 
-    void GetText(char* string) const;
+    void GetText(string& string) const;
 	
 	virtual float GetPerimeter() const = 0;
 	virtual float GetArea() const = 0;

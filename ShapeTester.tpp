@@ -22,8 +22,7 @@ void ShapeTester::ShapesTablePrint(const array<array<bool, N>, N>& table)
 {
     cout << "  ";
 
-    for (size_t j = 0; j < N; ++j)
-        cout << j << " ";
+    for (size_t j = 0; j < N; ++j) cout << j << " ";
 
     cout << "\n";
 
@@ -51,8 +50,7 @@ void ShapeTester::DumpAll(const array<unique_ptr<Shape>, N>& figures)
 
     for (const auto& fig : figures)
     {
-        if (fig)
-            fig->Dump();
+        if (fig) fig->Dump();
     }
 }
 
@@ -70,9 +68,7 @@ void ShapeTester::TestEquality(const array<unique_ptr<Shape>, N>& figures)
     {
         for (size_t j = 0; j < N; ++j)
         {
-            table[i][j] =
-                (figures[i] && figures[j]) &&
-                (*figures[i] == *figures[j]);
+            table[i][j] = (figures[i] && figures[j]) && (*figures[i] == *figures[j]);
         }
     }
 
@@ -106,15 +102,11 @@ void ShapeTester::TestScale(const array<unique_ptr<Shape>, N>& figures)
         float newW = figures[i]->GetWidth();
         float newH = figures[i]->GetHeight();
 
-        table[i] =
-            (newW == oldW * sf) &&
-            (newH == oldH * sf);
+        table[i] = (newW == oldW * sf) && (newH == oldH * sf);
     }
 
     for (size_t i = 0; i < N; ++i)
     {
-        cout << "Figure " << i << ": "
-            << (table[i] ? 'T' : 'F')
-            << "\n";
+        cout << "Figure " << i << ": " << (table[i] ? 'T' : 'F') << "\n";
     }
 }

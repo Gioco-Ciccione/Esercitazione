@@ -125,10 +125,5 @@ void Rectangle::Dump() const
     cout << "Rectangle Dump:" << endl << endl;
 	
 	Shape::Dump();
-	
-    
-    cout << "  Figure area:         " << GetArea() << endl;
-    cout << "  Figure perimeter:    " << GetPerimeter() << endl;
-    cout << "  Text:                " << (text ? text : "(null)") << endl;
 	cout << endl;
 }

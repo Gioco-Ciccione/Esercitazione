@@ -145,7 +145,4 @@ void Rhombus::Dump() const
 
     cout << "  Horizontal diagonal:   " << GetHDiagonal() << endl;
     cout << "  Vertical diagonal:     " << GetVDiagonal() << endl;
-    cout << "  Figure area:           " << GetArea() << endl;
-    cout << "  Figure perimeter:      " << GetPerimeter() << endl;
-    cout << "  Text:                  " << (text ? text : "(null)") << endl;
 }

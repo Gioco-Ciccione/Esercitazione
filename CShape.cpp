@@ -12,6 +12,7 @@
 using namespace std;
 
 /// @brief helper: safe copy with null checks and guaranteed termination
+[[deprecated("Non più necessaria per via del cambio da char* a string")]]
 static void SafeStrCopy(char* dest, const char* src, size_t destSize) {
     if (!dest) return;
     if (!src) {
@@ -19,7 +20,7 @@ static void SafeStrCopy(char* dest, const char* src, size_t destSize) {
         return;
     }
     //strncpy(dest, src, destSize - 1);
-    strncpy_s(dest, destSize, src, _TRUNCATE);
+    //strncpy_s(dest, destSize, src, _TRUNCATE);
     dest[destSize - 1] = '\0';
 }
 
@@ -29,10 +30,9 @@ static void SafeStrCopy(char* dest, const char* src, size_t destSize) {
 /// @brief default constructor 
 Shape::Shape()
 {
-	
 	cout << "Shape - default constructor" << endl;
 	
-	text = nullptr;
+	text = "";
     Init();
 }
 
@@ -45,7 +45,7 @@ Shape::Shape(float px, float py, float w, float h)
 {
 	cout << "Shape - constructor" << endl;
 	
-	text = nullptr;
+    text = "";
     Init();
 	
 	SetPosition(px,py);
@@ -60,7 +60,7 @@ Shape::Shape(const Shape &r)
 {
 	cout << "Shape - copy constructor" << endl;
 	
-    text = nullptr;
+    text = "";
 	Init(r);
 }
 
@@ -88,23 +88,14 @@ Shape& Shape::operator=(const Shape &r)
     width  = r.width;
     height = r.height;
 
-    // ensure we have a buffer
-    if (text == nullptr) {
-        text = new char[TEXTSIZE];
-        if (text == nullptr) {
-            ErrorMessage("operator=: memory allocation for text failed");
-            return *this;
-        }
-    }
-
-    SafeStrCopy(text, r.text, TEXTSIZE);
+    text = r.text;
     return *this;
 }
 
 /// @brief overload of operator == 
 /// @param r reference to the object on the right side of the operator 
 /// @return true if the two objects have the same width and the same length  
-bool Shape::operator==(const Shape &r)
+bool Shape::operator==(const Shape &r) const
 {
     return IsEqual(r);
 }
@@ -121,14 +112,7 @@ void Shape::Init()
     width = 0.0;
     height = 0.0;
 
-    if (text == nullptr) {
-        text = new char[TEXTSIZE];
-        if (text == nullptr) {
-            ErrorMessage("Init: memory allocation for text failed");
-            return;
-        }
-    }
-    text[0] = '\0';
+    text = "";
 }
 
 /// @brief initialization of the object as a copy of an object 
@@ -140,24 +124,13 @@ void Shape::Init(const Shape &r)
     y = r.y;
     width = r.width;
     height = r.height;
-
-    if (text == nullptr) {
-        text = new char[TEXTSIZE];
-        if (text == nullptr) {
-            ErrorMessage("Init(copy): memory allocation for text failed");
-            return;
-        }
-    }
-    SafeStrCopy(text, r.text, TEXTSIZE);
+    text = r.text;
 }
 
 /// @brief total reset of the object  
 void Shape::Reset()
 {
-    if (text != nullptr) {
-        delete [] text;
-        text = nullptr;
-    }
+    text = "";
     width = 0.0;
     height = 0.0;
     x = 0.0;
@@ -259,23 +232,9 @@ void Shape::SetDim(float w, float h)
 
 /// @brief set the text area of the object
 /// @param string the text 
-void Shape::SetText(const char* string)
+void Shape::SetText(const string& string)
 {
-    if (string == nullptr) {
-        // clear existing text if buffer exists, else do nothing
-        if (text) text[0] = '\0';
-        return;
-    }
-
-    if (text == nullptr) {
-        text = new char[TEXTSIZE];
-        if (text == nullptr) {
-            ErrorMessage("SetText: memory allocation for text failed");
-            return;
-        }
-    }
-
-    SafeStrCopy(text, string, TEXTSIZE);
+    text = string;
 }
 
 /// @brief get position of the object
@@ -334,14 +293,9 @@ float Shape::GetBoundingBoxArea() const
 
 /// @brief returns text in the text area 
 /// @param string pointer to a string 
-void Shape::GetText(char* string) const
+void Shape::GetText(string& string) const
 {
-    if (!string) return;
-    if (!text) {
-        string[0] = '\0';
-        return;
-    }
-    SafeStrCopy(string, text, TEXTSIZE);
+    string = text;
 }
 
 /* ----------------------------
@@ -365,11 +319,14 @@ void Shape::WarningMessage(const char *string) const
 /// @brief for debugging: all infos about the object
 void Shape::Dump() const
 {
-    std::cout << "Shape Dump:" << std::endl;
-    std::cout << "  Position: (" << x << ", " << y << ")" << std::endl;
-    std::cout << "  Width:  " << width << std::endl;
-    std::cout << "  Height: " << height << std::endl;
-    std::cout << "  Bounding Box Area:   " << GetBoundingBoxArea() << std::endl;
+    cout << "Shape Dump:" << endl;
+    cout << "  Position: (" << x << ", " << y << ")" << endl;
+    cout << "  Width:  " << width << endl;
+    cout << "  Height: " << height << endl;
+    cout << "  Bounding Box Area:   " << GetBoundingBoxArea() << endl;
+    cout << "  Figure area:           " << GetArea() << endl;
+    cout << "  Figure perimeter:      " << GetPerimeter() << endl;
+    cout << "  Text:                  " << text << endl;
  	
 	cout << endl;
 }

@@ -169,7 +169,4 @@ void IsoscelesTriangle::Dump() const
 
     cout << "  Oblique side:          " << GetObliqueSide() << endl;
     cout << "  Orientation:           " << OrientationToString(GetOrientation()) << endl;
-    cout << "  Figure area:           " << GetArea() << endl;
-    cout << "  Figure perimeter:      " << GetPerimeter() << endl;
-    cout << "  Text:                  " << (text ? text : "(null)") << endl;
 }

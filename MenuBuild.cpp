@@ -1,3 +1,8 @@
+/*! \file MenuBuild.cpp
+    \brief implementation of function BuildMenu (menu construction)
+    \author Sebastiano Valente
+*/
+
 #include "MenuBuild.h"
 #include <memory>
 #include <string>
@@ -17,24 +22,30 @@
 using namespace std;
 using enum EndActionBehaviour;
 
+/* ----------------------------
+   MENU CONSTRUCTION
+   ---------------------------- */
+
+/// @brief builds the complete application menu tree
+/// @return root node of the menu system
 shared_ptr<MenuNode> BuildMenu() {
     // Root menu
     auto root = NODE("Main Menu");
 
     // Visualize Menu
     auto perimeterShow = NODE("Perimetro", LAMBDA() {
-        cout << "Perimetro = " << context.grid.GetShapeAt(context.selectedShapeIndex).lock()->GetPerimeter() << endl;
+        PrintAndWait("Perimetro = " + to_string(context.grid.GetShapeAt(context.selectedShapeIndex).lock()->GetPerimeter()));
         return JumpToStart;
     });
     auto areaShow = NODE("Area", LAMBDA() {
-        cout << "Area = " << context.grid.GetShapeAt(context.selectedShapeIndex).lock()->GetArea() << endl;
+        PrintAndWait("Area = " + to_string(context.grid.GetShapeAt(context.selectedShapeIndex).lock()->GetArea()));
         return JumpToStart;
     });
     auto dumpShow = NODE("Dump completo", LAMBDA() {
         context.grid.GetShapeAt(context.selectedShapeIndex).lock()->Dump();
+        Wait();
         return JumpToStart;
     });
-
 
     auto visualizePolygons = NODE("Visualizza tutti i poligoni", LAMBDA_CAPTURE(perimeterShow, areaShow, dumpShow) {
         return ShowShapesList(context, nav, "Scegli la figura da analizzare:", { perimeterShow, areaShow, dumpShow }, "Cosa desideri visualizzare?");
@@ -91,7 +102,7 @@ shared_ptr<MenuNode> BuildMenu() {
         case ExecuteSelectedChild:
         {
             weak_ptr<Shape> selectedShape = context.grid.GetShapeAt(context.selectedShapeIndex);
-            selectedShape.lock()->SetText(context.text.c_str());
+            selectedShape.lock()->SetText(context.text);
             PrintAndWait("Testo figura aggiornato");
 
             return JumpToStart;
@@ -188,7 +199,7 @@ shared_ptr<MenuNode> BuildMenu() {
         ->SetBackOptionVisibility(true);
 
 
-    auto addPolygon = NODE("Inserisci un nuovo poligono", []() {})
+     auto addPolygon = NODE("Inserisci un nuovo poligono", []() {})
         ->AddChildren(rect, rhomb, isoscTrian)
         ->SetBackOptionVisibility(true);
 

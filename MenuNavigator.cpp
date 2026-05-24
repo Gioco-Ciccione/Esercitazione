@@ -1,8 +1,18 @@
+/*! \file MenuNavigator.cpp
+    \brief implementation of class MenuNavigator
+    \author Sebastiano Valente
+*/
+
 #include "MenuNavigator.h"
 #include "MenuContext.h"
 
 using namespace std;
 
+/* ----------------------------
+   UTILITY FUNCTIONS
+   ---------------------------- */
+
+/// @brief clears terminal screen
 static void ClearTerminal() {
 #ifdef _WIN32
     system("cls");
@@ -11,10 +21,22 @@ static void ClearTerminal() {
 #endif
 }
 
+/* ----------------------------
+   CONSTRUCTORS
+   ---------------------------- */
+
+/// @brief constructor
+/// @param root root menu node
+/// @param context menu execution context
 MenuNavigator::MenuNavigator(const shared_ptr<MenuNode>& root, MenuContext& context)
     : root(root), context(context), current(root) {
 }
 
+/* ----------------------------
+   MENU VISUALIZATION
+   ---------------------------- */
+
+/// @brief prints current menu on terminal
 void MenuNavigator::show() const {
     if (!current) return;
 
@@ -38,6 +60,11 @@ void MenuNavigator::show() const {
     }
 }
 
+/* ----------------------------
+   MENU EXECUTION
+   ---------------------------- */
+
+/// @brief executes current menu node
 void MenuNavigator::Run() {
     if (!current) return;
 
@@ -122,6 +149,8 @@ void MenuNavigator::Run() {
     }
 }
 
+/// @brief executes navigation from a specified node
+/// @param start starting node
 void MenuNavigator::Execute(const shared_ptr<MenuNode>& start) {
     if (current) {
         if (history.size() == 0) { history.push(current); }

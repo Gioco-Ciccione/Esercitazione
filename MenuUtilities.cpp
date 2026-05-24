@@ -1,3 +1,8 @@
+/*! \file MenuUtilities.cpp
+    \brief utility functions for menu handling
+    \author Sebastiano Valente
+*/
+
 #include "MenuUtilities.h"
 #include <memory>
 #include <string>
@@ -16,7 +21,14 @@
 using namespace std;
 using enum EndActionBehaviour;
 
-// Funzione input float sicuro
+/* ----------------------------
+   INPUT UTILITIES
+   ---------------------------- */
+
+/// @brief safely reads a float value from terminal
+/// @param outValue variable where the value will be stored
+/// @param allowOnlyPositive if true only positive values are accepted
+/// @return action behaviour after input
 EndActionBehaviour ReadFloatFromTerminal(float& outValue, bool allowOnlyPositive) {
     cin >> outValue;
 
@@ -36,10 +48,13 @@ EndActionBehaviour ReadFloatFromTerminal(float& outValue, bool allowOnlyPositive
     return ExecuteSelectedChild;
 }
 
-// Funzione input string sicuro
+/// @brief safely reads a string from terminal
+/// @param outValue variable where the string will be stored
+/// @param allowEmpty if true empty strings are accepted
+/// @return action behaviour after input
 EndActionBehaviour ReadStringFromTerminal(string& outValue, bool allowEmpty) {
     cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    //cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin, outValue);
 
     if (cin.fail()) {
@@ -56,7 +71,15 @@ EndActionBehaviour ReadStringFromTerminal(string& outValue, bool allowEmpty) {
     return ExecuteSelectedChild;
 }
 
-// Menu per selezione shape
+/* ----------------------------
+   MENU BUILDING
+   ---------------------------- */
+
+/// @brief builds a menu containing all shapes in the grid
+/// @param grid reference to the grid
+/// @param text menu title
+/// @param action callback executed when selecting a shape
+/// @return generated menu node
 shared_ptr<MenuNode> BuildShapeSelectionMenu(Grid& grid, const string& text, function<EndActionBehaviour(MenuContext&, int)> action) {
     auto root = NODE(text);
     auto shapes = grid.GetShapes();
@@ -87,6 +110,12 @@ shared_ptr<MenuNode> BuildShapeSelectionMenu(Grid& grid, const string& text, fun
     return root;
 }
 
+/// @brief builds a shape selection menu with additional child nodes
+/// @param grid reference to the grid
+/// @param text menu title
+/// @param action callback executed when selecting a shape
+/// @param children child nodes added to each shape node
+/// @return generated menu node
 shared_ptr<MenuNode> BuildShapeSelectionMenuWithChild(Grid& grid, const string& text, function<EndActionBehaviour(MenuContext&, int)> action, vector<shared_ptr<MenuNode>> children) {
     auto ret = BuildShapeSelectionMenu(grid, text, action);
     for (auto node : ret->GetChildren()) {
@@ -97,7 +126,13 @@ shared_ptr<MenuNode> BuildShapeSelectionMenuWithChild(Grid& grid, const string& 
     return ret;
 }
 
-// Funzione helper per tipo shape
+/* ----------------------------
+   SHAPE UTILITIES
+   ---------------------------- */
+
+/// @brief returns shape type as string
+/// @param shape_ptr weak pointer to the shape
+/// @return shape type name
 string GetShapeType(weak_ptr<Shape> shape_ptr) {
     auto s = shape_ptr.lock();
     if (!s) return "Invalid";
@@ -109,8 +144,15 @@ string GetShapeType(weak_ptr<Shape> shape_ptr) {
     return "Undefined";
 }
 
+/// @brief prints a message and waits for ENTER
+/// @param message message to print
 void PrintAndWait(const string& message) {
     cout << message << endl;
+    Wait();
+}
+
+/// @brief Waits for ENTER
+void Wait() {
     cout << "Premi INVIO per continuare...";
 
     cin.clear();
@@ -119,6 +161,15 @@ void PrintAndWait(const string& message) {
     getline(cin, str);
 }
 
+/* ----------------------------
+   MENU HELPERS
+   ---------------------------- */
+
+/// @brief checks if grid contains shapes
+/// @param ctx menu context
+/// @param nav menu navigator
+/// @param fn function executed if shapes exist
+/// @return action behaviour
 EndActionBehaviour HasShapes(MenuContext& ctx, MenuNavigator& nav, function<void()> fn) {
     if (ctx.grid.GetShapes().empty()) {
         PrintAndWait("Non sono presenti poligoni nella griglia");
@@ -128,9 +179,16 @@ EndActionBehaviour HasShapes(MenuContext& ctx, MenuNavigator& nav, function<void
     return ExecuteSelectedChild;
 }
 
+/// @brief shows shape list with child menus
+/// @param ctx menu context
+/// @param nav menu navigator
+/// @param text menu title
+/// @param children child nodes to attach
+/// @param title optional child menu title
+/// @return action behaviour
 EndActionBehaviour ShowShapesList(MenuContext& ctx, MenuNavigator& nav, const string& text, vector<shared_ptr<MenuNode>> children, const string& title) {
-    return HasShapes(ctx, nav, [&] {
-        auto modifyMenu = BuildShapeSelectionMenuWithChild(ctx.grid, text, [](MenuContext& context, int i) {
+    return HasShapes(ctx, nav, [&ctx, &text, &children, &title, &nav] {
+        auto modifyMenu = BuildShapeSelectionMenuWithChild(ctx.grid, text, [&nav](MenuContext& context, int i) {
             return ExecuteSelectedChild;
             }, children);
         if (title != "") {
@@ -142,6 +200,12 @@ EndActionBehaviour ShowShapesList(MenuContext& ctx, MenuNavigator& nav, const st
         });
 }
 
+/// @brief shows shape list with custom callback
+/// @param ctx menu context
+/// @param nav menu navigator
+/// @param text menu title
+/// @param fn callback function
+/// @return action behaviour
 EndActionBehaviour ShowShapesListWithFunction(MenuContext& ctx, MenuNavigator& nav, const string& text, function<EndActionBehaviour(MenuContext&, int)> fn) {
     return HasShapes(ctx, nav, [&] {
         auto modifyMenu = BuildShapeSelectionMenuWithChild(ctx.grid, text, fn, {});
@@ -149,6 +213,15 @@ EndActionBehaviour ShowShapesListWithFunction(MenuContext& ctx, MenuNavigator& n
         });
 }
 
+/* ----------------------------
+   SHAPE VALIDATION
+   ---------------------------- */
+
+/// @brief modifies a shape and validates grid constraints
+/// @param grid reference to the grid
+/// @param shape shape to modify
+/// @param modifyFunc lambda containing modification logic
+/// @return true if modification is valid
 bool ModifyAndValidate(Grid& grid, shared_ptr<Shape> shape, function<void(Shape&)> modifyFunc)
 {
     if (!shape)
