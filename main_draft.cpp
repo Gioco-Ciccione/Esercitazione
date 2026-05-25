@@ -16,7 +16,6 @@
 #include "MenuUtilities.h"
 
 using namespace std;
-using enum EndActionBehaviour;
 
 #define PARTE 2 // 1 = prima parte, 2 = seconda parte
 
